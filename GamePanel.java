@@ -49,12 +49,13 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
-        g.drawRect(0, 0, 50, 50);
+        g.setColor(Color.CYAN);
+        g.fillRect(0, 0, 100, 100);
     }
 
     public void newApple() {
         System.out.println("ooo spooky i made an apple");
-        draw();
+        
     }
 
     public void move(char direction) {
