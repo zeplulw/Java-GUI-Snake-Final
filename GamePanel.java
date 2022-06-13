@@ -41,6 +41,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 startGame();
             }
         });
+        this.validate();
     }
 
     public void startGame() {
@@ -109,7 +110,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     g.fillOval(x[i]+UNIT_SIZE/4, y[i]+UNIT_SIZE/4, UNIT_SIZE/2, UNIT_SIZE/2);
                 }
                 else {
-                    if (i % 2 == 0) {
+                    if (i % 3 == 0) {
                         g.setColor(new Color(84, 143, 50));
                         g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                     }
