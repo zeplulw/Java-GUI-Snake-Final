@@ -7,25 +7,26 @@ import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener {
 
-    static final int SCREEN_WIDTH = 600;
-    static final int SCREEN_HEIGHT = 600;
-    static final int UNIT_SIZE = 50;
-    static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/UNIT_SIZE;
-    static final int DELAY = 100;
-
-    final int x[] = new int[GAME_UNITS];
-    final int y[] = new int[GAME_UNITS];
-    int bodyParts = 6;
+    final int SCREEN_WIDTH = 600;
+    final int SCREEN_HEIGHT = 600;
+    final int UNIT_SIZE = 50;
+    final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/UNIT_SIZE;
+    final int DELAY = 1;
+    int x[] = new int[GAME_UNITS];
+    int y[] = new int[GAME_UNITS];
+    int bodyParts = 7;
     int applesEaten;
     int appleX;
     int appleY;
+    int timerCounter;
     char direction = 'R';
     boolean running = false;
-    boolean easy = false;
     boolean btnPressed = false;
     Timer timer;
     Random random;
-    JButton easyMode = new JButton("Easy Mode");
+    JCheckBox collision = new JCheckBox("Collision");
+    JCheckBox noBound = new JCheckBox("Die on walls");
+    JButton start = new JButton("Start Game");
     
     GamePanel() {
         random = new Random();
@@ -33,10 +34,9 @@ public class GamePanel extends JPanel implements ActionListener {
         this.setBackground(Color.black);
         this.setFocusable(true);
         this.addKeyListener(new MyKeyAdapter());
-        easyMode.setPreferredSize(new Dimension(125, 40));
-        easyMode.addActionListener(new ActionListener() {
+        start.setPreferredSize(new Dimension(125, 40));
+        start.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                easy = true;
                 btnPressed = true;
                 startGame();
             }
@@ -46,7 +46,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void startGame() {
         newApple();
-        this.remove(easyMode);
+        this.remove(start);
+        this.remove(collision);
+        this.remove(noBound);
         running = true;
         timer = new Timer(DELAY, this);
         timer.start();
@@ -60,9 +62,12 @@ public class GamePanel extends JPanel implements ActionListener {
     public void draw(Graphics g) {
         
         if (!btnPressed) {
-            this.add(easyMode);
-            // Center everything to the middle of the screen
-            easyMode.setLocation(SCREEN_WIDTH/2 - easyMode.getWidth()/2, SCREEN_HEIGHT/2 - easyMode.getHeight()/2);
+            this.add(start);
+            this.add(collision);
+            this.add(noBound);
+            start.setLocation(SCREEN_WIDTH/2 - start.getWidth()/2, SCREEN_HEIGHT/2 - start.getHeight()/2);
+            collision.setLocation(SCREEN_WIDTH/2 - collision.getWidth()/2, SCREEN_HEIGHT/2 - start.getHeight() - collision.getHeight()/2);
+            noBound.setLocation(SCREEN_WIDTH/2 - noBound.getWidth()/2, SCREEN_HEIGHT/2 - start.getHeight() - collision.getHeight() - noBound.getHeight()/2);
 
             return;
         }
@@ -70,8 +75,8 @@ public class GamePanel extends JPanel implements ActionListener {
         if (running)
         {
 
-            if (bodyParts >= GAME_UNITS)
-            {
+            // 144 is total area of the board
+            if (bodyParts >= 144) {
                 gameConditionUpdate(g, true);
                 running = false;
                 timer.stop();
@@ -120,7 +125,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     }
                 }
             }
-
+        
             // Draw score on screen in top left corner
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 20));
@@ -129,6 +134,7 @@ public class GamePanel extends JPanel implements ActionListener {
         else {
             gameConditionUpdate(g, false);
         }
+        timerCounter++;
     }
 
     public void newApple() {
@@ -146,26 +152,29 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void move() {
         
-        for (int i = bodyParts; i > 0; i--)
-        {
-            x[i] = x[i-1];
-            y[i] = y[i-1];
-        }
+        // 7 represents how fast the game will go. 10 - slow, 5 - fast
+        if (timerCounter % 7 == 0) {
+            for (int i = bodyParts; i > 0; i--)
+            {
+                x[i] = x[i-1];
+                y[i] = y[i-1];
+            }
 
-        switch (direction)
-        {
-            case 'U':
-                y[0] -= UNIT_SIZE;
-                break;
-            case 'D':
-                y[0] += UNIT_SIZE;
-                break;
-            case 'L':
-                x[0] -= UNIT_SIZE;
-                break;
-            case 'R':
-                x[0] += UNIT_SIZE;
-                break;
+            switch (direction)
+            {
+                case 'U':
+                    y[0] -= UNIT_SIZE;
+                    break;
+                case 'D':
+                    y[0] += UNIT_SIZE;
+                    break;
+                case 'L':
+                    x[0] -= UNIT_SIZE;
+                    break;
+                case 'R':
+                    x[0] += UNIT_SIZE;
+                    break;
+            }
         }
 
     }
@@ -181,15 +190,17 @@ public class GamePanel extends JPanel implements ActionListener {
 
     public void checkCollisions() {
         
-        for (int i = bodyParts; i > 0; i--)
-        {
-            if (x[0] == x[i] && y[0] == y[i])
+        if (collision.isSelected()) {
+            for (int i = bodyParts; i > 0; i--)
             {
-                running = false;
+                if (x[0] == x[i] && y[0] == y[i])
+                {
+                    running = false;
+                }
             }
         }
 
-        if (easy){
+        if (!noBound.isSelected()){
             // check if head hits border and teleport head to opposite side
             if (x[0] < 0) {
                 x[0] = SCREEN_WIDTH - UNIT_SIZE;
