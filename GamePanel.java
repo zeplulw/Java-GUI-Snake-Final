@@ -231,9 +231,12 @@ public class GamePanel extends JPanel implements ActionListener {
                 g.drawString("You Win", SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT/2);
             }
             else {
-                g.setColor(Color.RED);
-                g.setFont(new Font("Arial", Font.BOLD, 40));
-                g.drawString("Game Over", SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT/2);
+                // Protects from gameConditionUpdate being called when it shouldn't be
+                if (collision.isSelected() || noBound.isSelected()) {
+                    g.setColor(Color.RED);
+                    g.setFont(new Font("Arial", Font.BOLD, 40));
+                    g.drawString("Game Over", SCREEN_WIDTH/2 - 100, SCREEN_HEIGHT/2);
+                }
             }
         }
     }
