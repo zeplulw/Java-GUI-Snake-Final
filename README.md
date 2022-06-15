@@ -1,4 +1,8 @@
-## Snake But Bad (feat. Jake the Snake)
+<p align="center">
+  <img src="https://i.ibb.co/KL05F4B/image.png"><br>
+</p>
+
+<h1 align="center">Snake But Bad (feat. Jake the Snake)</h1>
 
 ### Ground Rules
 * Jake the Snake is on a mission to eat all of the apples.<br>
